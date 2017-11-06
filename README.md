@@ -1,5 +1,7 @@
 # proform
 
+Not yet structured for distribution. Rapidly iterating/changing the API currently to see what works best. If you're interested, look around and help me with suggestions/critiques
+
 Goal: Provide a form library with an opinionated and standardized data-flow but no standardized layout or styling. This allows the deveoper to re-use abstracted form components across their application regardless of whether each form's data requirements and relations are the same.
 
 A very basic form example:
