@@ -222,9 +222,9 @@ This provides a number of advantages
 2. The custom input can access API functions like `this.getInputProps`
 3. Extensibility. End up using more than one type of input in multiple places? Define more custom inputs with different names on `CustomForm` and these new inputs become available anywhere.
 
-*Optional bonus advantage/rambling:
+*Optional bonus advantage/rambling:*
 
-4. Thinking even crazier, this could allow us to share forms across applications. Consider an abstract sign up form with many standard user options. Use a primitive set of Inputs that will be defined in each target application. Form structure is the same across, but <this.Input> resolves to different things when in different contexts*
+4. *Thinking even crazier, this could allow us to share forms across applications. Consider an abstract sign up form with many standard user options. Use a primitive set of Inputs that will be defined in each target application. Form structure is the same across, but `<this.Input>` resolves to different things when in different contexts*
 
 This is also not the only way. Co-locating the structure of a custom input in a specific form class is also powerful. Want to edit the structure of a custom input used for a single form - easy after co-location.
 
