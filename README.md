@@ -1,8 +1,10 @@
 # proform
 
+So far, very light: ~1.3kb unminifized but gzipped
+
 Not yet structured for distribution. Rapidly iterating/changing the API currently to see what works best. If you're interested, look around and help me with suggestions/critiques
 
-Goal: Provide a form library with an opinionated and standardized data-flow but no standardized layout or styling. This allows the deveoper to re-use abstracted form components across their application regardless of whether each form's data requirements and relations are the same.
+Goal: Provide a form library (sort of also design pattern) with an opinionated and standardized data-flow but no standardized layout or styling. This allows the deveoper to re-use abstracted form components across their application regardless of whether each form's data requirements and relations are the same.
 
 A very basic form example:
 
@@ -51,11 +53,23 @@ export default class BasicForm extends Form {
     - Custom validation types can be plugged
     - Some validation types block form submission when present,
       others do not block form submission even when present.
+    - Validation object signature
+      - { type: String, blocking: Boolean, class: String, meta: Object }
+      - Defualt meta is just a string, but could be an object for more
+        complex errors. Map over validations, spread result onto custom re-usable
+        component.
 - Form state serialization
   - Save form state to (local storage || remote server || file)
   - Restore form state from (local storage || remote server || file)
 - Pluggable custom field value-resolution based on field type
 - Form-wide/global validations/errors seperate from per-field
+- Disable submit button conditionally
+- Track field touched state
+- Track submitting state
+- Maybe/maybe not: "Loading" type validation for async validations. Display until promise resolved then remove. Seems kind of cool idea
+  - What should happen if async validation fails? Fallback? Retry?
+- Choose validations onChange or validations on blur
+- Support Yup validationSchema. Have generators on a per-type basis so that you can have a schema of validations for each type (warning, error, etc).
 
 # Documentation
 
@@ -82,6 +96,8 @@ The simplest input registration is as follows:
 This creates an input named "username". The name of an input is used when mutating its state and when resoving a value on change and on submission.
 
 For every input you register, there should be a matching input in your form's `renderInputs(...)` function. The flexibility of this approach allows for the use of any input component - spread the result of the `getInputProps(inputName)` function onto the component and it will then be synced with the form's state.
+
+DX Tip: If you forget to render an input for one you registered, a warning is shown in the console with the name of the missing input.
 
 ```javascript
 export default class BasicForm extends Form {
@@ -127,6 +143,8 @@ export default class BasicForm extends Form {
 }
 ```
 
+// DX Tip: Hopefully you won't forget to spread allInputs in onChange, but if you ever do, there is a console warning upon its omission.
+
 ### Validations
 
 Currently: return string to add to list of current errors, return array to overwrite previous error array and replace with new one. Return object signature will probably change here (to support typed validations) but onValidate API will almost definitely stay the same.
@@ -153,14 +171,62 @@ Above shows how to add the errors into your form's state. Below is an example of
   }
 ```
 
-It is convienent to standardize your basic input structure (including the display of validations). Consider some close variation of the following for a standard input:
+### Design Patterns for Re-Use
+
+It is convienent to standardize your basic input structure (including the display of validations).
+
+Imagine a generalied structre that could be frequently re-used:
 
 ```javascript
+    <div>
+      <label for={name}>{label}</label>
+      <input {...this.getInputProps(name)} />
+      {this.getErrors(name)}
+    </div>
+```
+
+Want to re-use a structure (like the standard one above), use classes to your advantage (every reader: 😵).
+
+But really...
+
+```javascript
+class CustomForm extends Form {
   Input = ({ name, label }) => (
     <div>
       <label for={name}>{label}</label>
       <input {...this.getInputProps(name)} />
-      <div></div>
+      {this.getErrors(name)}
     </div>
   )
+}
+
+class myForm extends CustomForm {
+  componentDidMount() {
+    this.registerInput({  name: "username" })
+  }
+
+  renderInputs({ getInputProps, getSubmitProps }) {
+    return (
+      <form>
+        <this.Input name="username" label="UserName: " />
+      </form>
+    )
+  }
+}
 ```
+
+This provides a number of advantages
+1. The custom Input is now available on all forms extending `CustomForm`
+  - Define once, edit in one central place, yet forms are not coupled
+  - Passing the props to a custom input component seperates the implementation from the usage, effectively decoupling it. The layout is now easily changed without breaking structure
+2. The custom input can access API functions like `this.getInputProps`
+3. Extensibility. End up using more than one type of input in multiple places? Define more custom inputs with different names on `CustomForm` and these new inputs become available anywhere.
+
+Optional bonus advantage/rambling:
+4. Thinking even crazier, this could allow us to share forms across applications. Consider an abstract sign up form with many standard user options. Use a primitive set of Inputs that will be defined in each target application. Form structure is the same across, but <this.Input> resolves to different things when in different contexts
+
+This is also not the only way. Co-locating the structure of a custom input in a specific form class is also powerful. Want to edit the structure of a custom input used for a single form - easy after co-location.
+
+### Other
+
+Currently has a dependency on "decko" to provide some quick dev util functionality. I'll do a codemod or something on the prod version to change the @bind calls to 'this.funcName = this.findName.bind(this)` in the class constructor instead to remove the superficial depdency. The production version of this library has no outside dependencies.

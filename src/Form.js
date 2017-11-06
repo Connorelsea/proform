@@ -16,7 +16,6 @@ export default class Form extends Component {
 
   @bind
   registerGroup({ name, isActivated, activated = true }) {
-    console.log("register grouPPP")
     this.setState(prevState => ({
       ...prevState,
       meta: {
@@ -32,8 +31,6 @@ export default class Form extends Component {
 
   @bind
   isGroupActivated(name) {
-    console.log("is activated")
-    console.log(name, this.state.meta[name])
     return this.state.meta[name] ? this.state.meta[name].activated : true
   }
 
@@ -44,9 +41,6 @@ export default class Form extends Component {
     onChange = this.defaultChangeFunc,
     onValidate = this.defaultValidateFunc
   ) {
-    console.log("=========== PROCESS CHANGE: " + name)
-    console.log("=========== VALUE: ", value)
-
     const groupName = this.state.meta[name].affectsGroup
     let isActivated = true
     let groupObject = {}
@@ -59,6 +53,10 @@ export default class Form extends Component {
       ? validation
       : [...result.meta[name].errors, validation]
 
+    // Let onValidate take array.This will mean async validations. Promise.all
+    // the array of functions. Encourage async/await functions for validations.
+    // Those functions return validation syntax
+
     if (result.meta === undefined) {
       console.error(
         `Did you forget to spread allInputs in registerInput ${name}.onChange`
@@ -68,9 +66,7 @@ export default class Form extends Component {
     if (groupName) {
       const group = this.state.meta[groupName]
       isActivated = group.isActivated({ allInputs: result, name })
-      console.log(isActivated)
 
-      console.log("STATE")
       groupObject = {
         [groupName]: {
           ...group,
@@ -79,27 +75,22 @@ export default class Form extends Component {
       }
     }
 
-    this.setState(
-      {
-        ...result,
-        meta: {
-          ...result.meta,
-          [name]: {
-            ...result.meta[name],
-            errors,
-          },
-          ...groupObject,
+    this.setState({
+      ...result,
+      meta: {
+        ...result.meta,
+        [name]: {
+          ...result.meta[name],
+          errors,
         },
+        ...groupObject,
       },
-      () => console.log("VALUE RESOLVE FOR " + name)
-    )
+    })
   }
 
   render() {
-    const self = this
-    console.log("rendering", this.state, this.props)
     return this.renderInputs({
-      self,
+      self: this,
       getInputProps: this.getInputProps,
       getSubmitProps: this.getSubmitProps,
       getErrors: this.getErrors,
@@ -147,44 +138,37 @@ export default class Form extends Component {
   // this.state[input], auxilary items are stored in this.state.meta[input]
 
   @bind
-  registerInput({
-    name,
-    type,
-    onChange = this.defaultChangeFunc,
-    onValidate = this.defaultValidateFunc,
-    isEnabled,
-    defaultValue = "",
-    affectsGroup,
-  }) {
+  registerInput(props) {
     const input = document.getElementById(name)
 
+    const {
+      name,
+      type,
+      onChange = this.defaultChangeFunc,
+      onValidate = this.defaultValidateFunc,
+      isEnabled,
+      defaultValue = "",
+      affectsGroup,
+    } = props
+
     if (!input) {
-      console.error(
+      return console.error(
         `Attempting to register ${name} input before it's rendered. Make sure to render an input in renderInputs for ${name}`
       )
-      return
     }
 
-    this.setState(
-      prevState => ({
-        ...prevState,
-        ...onChange({ allInputs: prevState, value: defaultValue }),
-        meta: {
-          ...prevState.meta,
-          [name]: {
-            id: name,
-            name,
-            errors: [],
-            onChange,
-            onValidate,
-            isEnabled,
-            type,
-            affectsGroup,
-          },
+    this.setState(prevState => ({
+      ...prevState,
+      ...onChange({ allInputs: prevState, value: defaultValue }),
+      meta: {
+        ...prevState.meta,
+        [name]: {
+          id: name,
+          errors: [],
+          ...props,
         },
-      })
-      // () => this.processChange(name, defaultValue, onChange, onValidate)
-    )
+      },
+    }))
 
     input.addEventListener("input", event =>
       this.processChange(name, event.target.value, onChange, onValidate)
