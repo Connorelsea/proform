@@ -32,7 +32,7 @@ export default class BasicForm extends Form {
 }
 ```
 
-## Current Features
+### Current Features
 
 - Form input state handling system
   - Cross-field relationships and mutations
@@ -42,7 +42,7 @@ export default class BasicForm extends Form {
   - Deactivating: Removed visually, Not included in the end form result
   - Disabling: "Disabled" look visually, included in end form result
 
-## Future Feature Goals (~Roadmap)
+### Future Feature Goals (~Roadmap)
 
 - Typed validations
   - Default types include (error, warning, suggestion)
@@ -55,7 +55,9 @@ export default class BasicForm extends Form {
 - Pluggable custom field value-resolution based on field type
 - Form-wide/global validations/errors seperate from per-field
 
-## Form Lifecycle
+# Documentation
+
+### Form Lifecycle
 
 The life-cycle of the form occurs on every input change. The life-cycle consists of the functions listed below in order (excluding registration). A function that provides basic behavior is used for each of these life-cycle functions. If you wish to define custom functionality, it is easy to override one of these life-cycle functions.
 
@@ -65,7 +67,7 @@ The life-cycle of the form occurs on every input change. The life-cycle consists
 2. onValidate
 3. isActivated
 
-## Creating an Input
+### Creating an Input
 
 Input registration is done in `componentDidMount()`. This is where you provide information such as name, props, and custom definitions for lifecycle functions.
 
@@ -121,3 +123,42 @@ export default class BasicForm extends Form {
     )
   }
 }
+```
+
+### Validations
+
+Currently: return string to add to list of current errors, return array to overwrite previous error array and replace with new one. Return object signature will probably change here (to support typed validations) but onValidate API will almost definitely stay the same.
+
+```javascript
+  this.registerInput({
+    name: "username"
+    onValidate: ({ allInputs, value }) =>
+      value === "hitler" && ["No nazis allowed, this isn't Twitter"]
+  })
+```
+
+Above shows how to add the errors into your form's state. Below is an example of how to display these errors in your form. If there are no errors, an empty array is returned, no elements are mapped until errors occur and fill that array.
+
+```javascript
+  renderInputs({ getInputProps, getSubmitProps, getErrors }) {
+    return (
+      <form>
+        <input {...getInputProps("username")} />
+        {getErrors("username").map(error => <div>{error}</div>)}
+        <button {...getSubmitProps()}>Submit</button>
+      </form>
+    )
+  }
+```
+
+It is convienent to standardize your basic input structure (including the display of validations). Consider some close variation of the following for a standard input:
+
+```javascript
+  Input = ({ name, label }) => (
+    <div>
+      <label for={name}>{label}</label>
+      <input {...this.getInputProps(name)} />
+      <div></div>
+    </div>
+  )
+```

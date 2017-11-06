@@ -13,8 +13,8 @@ class App extends Component {
           <h1 className="App-title">Form Testing</h1>
         </header>
         <div style={{ paddingLeft: 60 }}>
-          {/* <UserForm /> */}
-          <BasicForm />
+          <UserForm />
+          {/* <BasicForm /> */}
         </div>
       </div>
     )
