@@ -200,7 +200,7 @@ class CustomForm extends Form {
   )
 }
 
-class myForm extends CustomForm {
+class MyForm extends CustomForm {
   componentDidMount() {
     this.registerInput({  name: "username" })
   }
@@ -211,6 +211,12 @@ class myForm extends CustomForm {
         <this.Input name="username" label="UserName: " />
       </form>
     )
+  }
+}
+
+class MyApplication extends React.Component {
+  render() {
+    return <MyForm />
   }
 }
 ```
