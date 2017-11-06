@@ -107,6 +107,12 @@ export default class Form extends Component {
     })
   }
 
+  getSubmitProps() {
+    return {
+      type: "submit",
+    }
+  }
+
   @bind
   getInputProps(name) {
     return {
@@ -129,8 +135,12 @@ export default class Form extends Component {
       // this is resolution. could introduce custom functions
       // for certain types here. to build a value from their body
       // of data
-      if (this.state.meta[key].activated) values[key] = this.state.key.value
+      // also need to check here if input HAS a group and if that group
+      // is deactivated. if so, dont resolve value
+      if (key !== "meta") values[key] = this.state[key].value
     }
+
+    return values
   }
 
   // Things that directly relate to the value of2 the input are stored in
@@ -147,9 +157,6 @@ export default class Form extends Component {
     affectsGroup,
   }) {
     const input = document.getElementById(name)
-
-    console.log("render input===============")
-    console.log(input, name)
 
     if (!input) {
       console.error(

@@ -2,6 +2,7 @@ import React, { Component } from "react"
 import logo from "./logo.svg"
 import "./App.css"
 import UserForm from "./UserForm"
+import BasicForm from "./BasicForm"
 
 class App extends Component {
   render() {
@@ -12,7 +13,8 @@ class App extends Component {
           <h1 className="App-title">Form Testing</h1>
         </header>
         <div style={{ paddingLeft: 60 }}>
-          <UserForm />
+          {/* <UserForm /> */}
+          <BasicForm />
         </div>
       </div>
     )

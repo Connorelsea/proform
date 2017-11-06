@@ -45,21 +45,28 @@ export default class UserForm extends Form {
     console.log(this.getValues())
   }
 
+  Input = ({ name, label }) => (
+    <div>
+      <label for={name}>{label}</label>
+      <input {...this.getInputProps(name)} />
+      {this.getErrors(name)}
+    </div>
+  )
+
   renderInputs({ getInputProps, getSubmitProps, getErrors, isGroupActivated }) {
+    const { Input } = this
     return (
       <form onSubmit={this.onSubmit}>
         <div>
           <h2>Account</h2>
-          <input {...getInputProps("username")} />
-          <input {...getInputProps("password")} />
+          <Input label="Username" name="username" />
+          <Input label="Password" name="password" />
         </div>
 
         <div>
           <h2>Age</h2>
-          <input {...getInputProps("birthday")} />
-          {getErrors("birthday")}
-          <input {...getInputProps("adult")} />
-          <label for="adult">is of adult age</label>
+          <Input label="Birthday" name="birthday" />
+          <Input label="Is of Adult Age: " name="adult" />
         </div>
 
         {isGroupActivated("adult_info") && (
@@ -68,12 +75,12 @@ export default class UserForm extends Form {
             <p>
               Conditionally displayed fields only available above a certain age
             </p>
-            <input {...getInputProps("social_security")} />
+            <Input label="Social Security " name="social_security" />
           </div>
         )}
 
         <button type="submit">Create Account</button>
-        <pre>{JSON.stringify(this.state, null, 2)}</pre>
+        {/* <pre>{JSON.stringify(this.state, null, 2)}</pre> */}
       </form>
     )
   }

@@ -1,6 +1,3 @@
-A very basic form example:
-
-```
 import React from "react"
 import Form from "./Form"
 import { bind } from "decko"
@@ -26,4 +23,3 @@ export default class BasicForm extends Form {
     )
   }
 }
-```
