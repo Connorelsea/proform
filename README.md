@@ -4,7 +4,7 @@ So far, very light: ~1.3kb unminifized but gzipped
 
 Not yet structured for distribution. Rapidly iterating/changing the API currently to see what works best. If you're interested, look around and help me with suggestions/critiques
 
-Goal: Provide a form library (sort of also design pattern) with an opinionated and standardized data-flow but no standardized layout or styling. This allows the deveoper to re-use abstracted form components across their application regardless of whether each form's data requirements and relations are the same.
+**Goal:** Provide a form library (sort of also design pattern) with an opinionated and standardized data-flow but no standardized layout or styling. Take advantage of class constructs and ES6 for rapid re-use. This allows the deveoper to re-use abstracted form components across their application regardless of whether each form's data requirements and relations are the same.
 
 A very basic form example:
 
@@ -66,10 +66,14 @@ export default class BasicForm extends Form {
 - Disable submit button conditionally
 - Track field touched state
 - Track submitting state
+- Choose validations onChange or validations on blur
+
+### Further Future Feature Goals (Ideas)
+
+- Support Yup validationSchema. Have generators on a per-type basis so that you can have a schema of validations for each type (warning, error, etc).
+- Documentation on non-`<form>` parent types. Custom parent types and custom submission for creating something like multiple popup chat windows where the input is a form input and the value is validated on the frontend for blankness onsubmit.
 - Maybe/maybe not: "Loading" type validation for async validations. Display until promise resolved then remove. Seems kind of cool idea
   - What should happen if async validation fails? Fallback? Retry?
-- Choose validations onChange or validations on blur
-- Support Yup validationSchema. Have generators on a per-type basis so that you can have a schema of validations for each type (warning, error, etc).
 
 # Documentation
 
@@ -233,6 +237,10 @@ This provides a number of advantages
 4. *Thinking even crazier, this could allow us to share forms across applications. Consider an abstract sign up form with many standard user options. Use a primitive set of Inputs that will be defined in each target application. Form structure is the same across, but `<this.Input>` resolves to different things when in different contexts*
 
 This is also not the only way. Co-locating the structure of a custom input in a specific form class is also powerful. Want to edit the structure of a custom input used for a single form - easy after co-location.
+
+### Testing
+
+How to test the forms you create using this library. Coming soon 
 
 ### Other
 

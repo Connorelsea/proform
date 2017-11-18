@@ -15,6 +15,18 @@ export default class Form extends Component {
   }
 
   @bind
+  testChange({ name, givenValue, expectedOutput }) {
+    const result = this.processChange(
+      name,
+      givenValue,
+      this.state.meta[name].onChange,
+      this.state.meta[name].onValidate
+    )
+
+    return JSON.stringify(expectedOutput) === JSON.stringify(result)
+  }
+
+  @bind
   registerGroup({ name, isActivated, activated = true }) {
     this.setState(prevState => ({
       ...prevState,
@@ -56,6 +68,9 @@ export default class Form extends Component {
     // Let onValidate take array.This will mean async validations. Promise.all
     // the array of functions. Encourage async/await functions for validations.
     // Those functions return validation syntax
+
+    console.log("===========================")
+    console.log("Processing Change: " + value)
 
     if (result.meta === undefined) {
       console.error(
@@ -139,8 +154,6 @@ export default class Form extends Component {
 
   @bind
   registerInput(props) {
-    const input = document.getElementById(name)
-
     const {
       name,
       type,
@@ -150,6 +163,8 @@ export default class Form extends Component {
       defaultValue = "",
       affectsGroup,
     } = props
+
+    const input = document.getElementById(name)
 
     if (!input) {
       return console.error(
@@ -169,6 +184,8 @@ export default class Form extends Component {
         },
       },
     }))
+
+    console.log("Registering Input")
 
     input.addEventListener("input", event =>
       this.processChange(name, event.target.value, onChange, onValidate)

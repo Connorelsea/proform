@@ -1,13 +1,16 @@
 import React from "react"
 import Form from "./Form"
-import { bind } from "decko"
 
 export default class BasicForm extends Form {
+  constructor(props) {
+    super(props)
+    this.onSubmit = this.onSubmit.bind(this)
+  }
+
   componentDidMount() {
     this.registerInput({ name: "username" })
   }
 
-  @bind
   onSubmit(event) {
     event.preventDefault()
     let vals = this.getValues()
